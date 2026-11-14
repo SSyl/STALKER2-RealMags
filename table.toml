@@ -1,0 +1,36 @@
+# Run tools/generate.py after editing.
+
+# Magazine SID = MaxAmmo.
+[magazines]
+GunUDP_MagDefault = 12          # USP Tactical, Deadeye, Gambit (15)
+GunUDP_MagIncreased = 17        # (20)
+GunAPB_MagDefault = 20          # APB, Encourage (18)
+GunPM_MagIncreased = 10         # PM and its uniques (12)
+GunIntegral_MagDefault = 17     # Vector, Riemann (20)
+GunIntegral_MagIncreased = 40   # KRISS MagEx2 on a G17, matches the sleeve model (30)
+GunZubr_MagDefault = 53         # Bizon 9x19 (50)
+Gun_RatKiller_MagDefault = 48   # Bizon "Rat Killer" 9x18: three 16-round boxes, like the real 64 is four (50)
+GunSpitfire_MagDefault = 45     # AKS-74U "Spitfire" (40)
+GunFora230_MagIncreased = 50    # Fort-230: box tower + drum model, like 50-round Glock/Uzi drums (40)
+GunGP37_MagLarge = 100          # G36 (90)
+GunPKP_MagDefault = 100         # PKM (150)
+GunPKP_MagIncreased = 200       # (250)
+GunPKP_MagLarge = 250           # (350)
+GunTank_MagLarge = 250          # PKM "Glutton" (500)
+
+# Weapon SID = capacity change in percent, applied by a hidden preinstalled upgrade.
+# Each needs a unique upgrade ID above vanilla's highest (568 in game 2.1).
+[hidden]
+Gun_Krivenko_HG = { percent = 25, id = 9101 }   # Gambit 9mm: 12/17 -> 15/21
+
+# SIDs defined only in DLC1's tables. Their patches go under cfg/DLCGameData/DLC1/.
+[DLC1.magazines]
+GunDefender_MagIncreased = 12   # Saiga "Guardian" (14)
+
+[DLC1.hidden]
+GunAK9_ST = { percent = -33, id = 9102 }        # AK-9 9x39: 30/45/30 -> 20/30/20
+
+# Upgrade SID = capacity change in percent, appended to its EffectPrototypeSIDs at `index`
+# (the first free index in vanilla).
+[upgrades]
+GunIntegral_Upgrade_Body_3 = { percent = -25, index = 5 }   # Vector/Riemann .45 swap: 17/40 -> 13/30 (MagEx2 .45)
