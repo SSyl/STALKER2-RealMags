@@ -125,9 +125,8 @@ whether a game update changed any magazine this mod patches.
 
 ## Credits
 
-- [joric](https://github.com/joric/stalker) for `tools/bin2cfg.py`, which decodes the game's binary tables. It's
-  released under the Unlicense and included unchanged.
+- [joric](https://github.com/joric/stalker) for `bin2cfg.py`, which ZonePak uses to decode the game's binary tables.
 
 ## License
 
-The code and docs are MIT, except `tools/bin2cfg.py` (see Credits). See `LICENSE`.
+The code and docs are MIT. See `LICENSE`.

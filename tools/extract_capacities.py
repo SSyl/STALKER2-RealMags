@@ -12,43 +12,19 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import bin2cfg  # noqa: E402
-
-GAME_DATA = 'Stalker2/Content/GameLite/GameData/'
-DLC_DATA = 'Stalker2/Content/GameLite/DLCGameData/'
-# Pak (relative to the game folder) -> the folder its tables sit under.
-PAKS = {
-    'Stalker2/Content/Paks/pakchunk0-Windows.pak': GAME_DATA,
-    'Stalker2/Content/Paks/pakchunk101-Windows.pak': DLC_DATA + 'PreOrder/',
-    'Stalker2/Content/Paks/pakchunk102-Windows.pak': DLC_DATA + 'Deluxe/',
-    'Stalker2/Content/Paks/pakchunk104-Windows.pak': DLC_DATA + 'Ultimate/',
-    'DLC1/S2_DLC1Stalker2-Windows.pak': DLC_DATA + 'DLC1/',
-}
 TABLES = {
-    'item': 'ItemPrototypes.cfg.bin',
-    'upgrade': 'UpgradePrototypes.cfg.bin',
-    'effect': 'EffectPrototypes.cfg.bin',
-    'setup': 'WeaponData/WeaponGeneralSetupPrototypes.cfg.bin',
+    'item': 'ItemPrototypes',
+    'upgrade': 'UpgradePrototypes',
+    'effect': 'EffectPrototypes',
+    'setup': 'WeaponData/WeaponGeneralSetupPrototypes',
 }
 
 
-def load_tables(config, tools, cfg):
-    game, repak = config.require('game'), config.require('repak')
+def load_tables(config, gametables, cfg):
     tables = {name: {} for name in TABLES}
-    for pak_rel, folder in PAKS.items():
-        pak = game / pak_rel
-        if not pak.is_file():
-            print(f'skipped {pak_rel}: not installed')
-            continue
-        listed = set(tools.pak_list(repak, pak))
-        for name, file in TABLES.items():
-            if folder + file not in listed:
-                continue
-            roots = bin2cfg.read_binary_cfg(tools.pak_get(repak, pak, folder + file))
-            known = {root.__internal__.rawName: root for root in roots if root.__internal__.rawName}
-            text = '\n'.join(root.to_string(known) for root in roots)
-            for node in cfg.parse(text, folder + file, strict=False):
+    for part in gametables.PARTS:
+        for name, table in TABLES.items():
+            for node in gametables.table(config, part, table):
                 if isinstance(node, cfg.Struct):
                     sid = node.find('SID')
                     tables[name][sid.value if isinstance(sid, cfg.Value) else node.name] = node
@@ -147,14 +123,14 @@ def main():
     if args.zonepak is None:
         sys.exit(f'ZonePak not found in {" or ".join(map(str, candidates))}. Pass --zonepak <its folder>.')
     sys.path.insert(0, str(args.zonepak))
-    from zonepak import cfg, tools
+    from zonepak import cfg, gametables, tools
     from zonepak.build import game_text
     from zonepak.fetch import FetchError
     from zonepak.project import load_config
 
     try:
         config = load_config()
-        tables = load_tables(config, tools, cfg)
+        tables = load_tables(config, gametables, cfg)
         weapons = survey(tables, game_text(config).culture('en'), cfg)
         args.out.write_text(json.dumps(weapons, indent=1, ensure_ascii=False), encoding='utf-8')
     except (FetchError, tools.ToolError, ValueError, OSError) as e:
