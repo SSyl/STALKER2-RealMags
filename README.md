@@ -91,9 +91,9 @@ patches.
 
 ## Building from source
 
-You need Python 3.11 or newer, [ZonePak](https://github.com/SSyl/ZonePak) set up as its README describes, and the
-Cost of Hope expansion installed. ZonePak reads the expansion's tables from its pak, and it stops with "DLC1 is not
-a DLC folder in the game install" if the expansion is missing.
+You need Python 3.11 or newer, [ZonePak](https://github.com/SSyl/STALKER2-ZonePak) set up as its README describes,
+and the Cost of Hope expansion installed. ZonePak reads the expansion's tables from its pak, and it stops with "DLC1
+is not a DLC folder in the game install" if the expansion is missing.
 
 `table.toml` holds the values. `tools/generate.py` turns them into the cfg patches in `cfg/`, and ZonePak checks and
 packs them:
@@ -119,9 +119,9 @@ magazines, their capacities and the upgrades that touch them to a JSON file:
 python tools/extract_capacities.py weapons.json
 ```
 
-It uses ZonePak's config for the game and repak paths, and looks for ZonePak next to this folder. Pass
-`--zonepak <folder>` if yours is somewhere else. Compare the output with `table.toml` to see whether a game update
-changed any magazine this mod patches.
+It uses ZonePak's config for the game and repak paths, and looks for a `ZonePak` or `STALKER2-ZonePak` folder next
+to this one. Pass `--zonepak <folder>` if yours is somewhere else. Compare the output with `table.toml` to see
+whether a game update changed any magazine this mod patches.
 
 ## Credits
 

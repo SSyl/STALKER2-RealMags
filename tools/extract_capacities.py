@@ -140,19 +140,25 @@ def survey(tables, names, cfg):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('out', type=Path)
-    parser.add_argument('--zonepak', type=Path, default=ROOT.parent / 'ZonePak')
+    parser.add_argument('--zonepak', type=Path)
     args = parser.parse_args()
-    if not (args.zonepak / 'zonepak' / '__init__.py').is_file():
-        sys.exit(f'ZonePak not found at {args.zonepak}. Pass --zonepak <its folder>.')
+    candidates = [args.zonepak] if args.zonepak else [ROOT.parent / 'ZonePak', ROOT.parent / 'STALKER2-ZonePak']
+    args.zonepak = next((c for c in candidates if (c / 'zonepak' / '__init__.py').is_file()), None)
+    if args.zonepak is None:
+        sys.exit(f'ZonePak not found in {" or ".join(map(str, candidates))}. Pass --zonepak <its folder>.')
     sys.path.insert(0, str(args.zonepak))
     from zonepak import cfg, tools
     from zonepak.build import game_text
+    from zonepak.fetch import FetchError
     from zonepak.project import load_config
 
-    config = load_config()
-    tables = load_tables(config, tools, cfg)
-    weapons = survey(tables, game_text(config).culture('en'), cfg)
-    args.out.write_text(json.dumps(weapons, indent=1, ensure_ascii=False), encoding='utf-8')
+    try:
+        config = load_config()
+        tables = load_tables(config, tools, cfg)
+        weapons = survey(tables, game_text(config).culture('en'), cfg)
+        args.out.write_text(json.dumps(weapons, indent=1, ensure_ascii=False), encoding='utf-8')
+    except (FetchError, tools.ToolError, ValueError, OSError) as e:
+        sys.exit(f'error: {e}')
     print(f'{len(weapons)} guns -> {args.out}')
 
 
